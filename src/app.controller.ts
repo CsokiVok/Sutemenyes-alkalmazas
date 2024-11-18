@@ -109,4 +109,32 @@ export class AppController {
     this.sutik[eredetiSutiID] = ujSuti;
     return ujSuti;
   }
+
+  @Get('sutikabc')
+  sutikabc(){
+    return Array.from(this.sutik).sort((a, b) => a.nev.localeCompare(b.nev));    
+  }
+
+  @Get('sutikkeszleten')
+  sutikeszleten(@Body() sutiAdatok: Sutemeny){
+    return this.sutik.filter(suti => suti.db > 0);
+  }
+
+  @Post('ujSutiGyors')
+  ujSutiGyors(@Body('nev') nev: string) {
+    if (typeof nev != 'string' || !nev || nev.trim() == '') {
+      throw new BadRequestException('A név nem lehet üres');
+    }
+
+    const ujSutemeny: Sutemeny = {
+      id: this.nextID,
+      nev: nev.trim(),
+      laktozMentes: false,
+      db: 1,
+    };
+
+    this.nextID++;
+    this.sutik.push(ujSutemeny);
+    return ujSutemeny;
+  }
 }
